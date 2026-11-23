@@ -1,0 +1,7 @@
+[Unit]
+Description=Fetch Claude plan usage limits (Claude Usage GNOME extension)
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/claude-usage-poll

@@ -1,0 +1,9 @@
+.claude-usage-label { font-feature-settings: "tnum"; }
+.claude-usage-warn  { color: #f6d32d; }
+.claude-usage-crit  { color: #ff7b63; }
+.claude-usage-stale { color: #9a9996; }
+.claude-usage-bar-bg   { background-color: rgba(255,255,255,0.12); border-radius: 3px; height: 6px; min-width: 220px; }
+.claude-usage-bar-fill { background-color: #3584e4; border-radius: 3px; height: 6px; }
+.claude-usage-bar-fill.claude-usage-warn { background-color: #f6d32d; }
+.claude-usage-bar-fill.claude-usage-crit { background-color: #ff7b63; }
+.claude-usage-sub { font-size: smaller; color: #9a9996; }

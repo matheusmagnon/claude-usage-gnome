@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+"""Claude Code statusline hook: saves `rate_limits` to ~/.cache/claude-usage.json
+(for the Claude Usage GNOME extension), then hands off to your real statusline.
+
+settings.json:
+  "statusLine": {"type": "command", "command": "~/.local/bin/claude-usage-statusline"}
+or, wrapping an existing statusline:
+  "statusLine": {"type": "command", "command": "~/.local/bin/claude-usage-statusline ~/.claude/statusline.sh"}
+
+Everything after the script name is run as a shell command with the same JSON
+on stdin, and its output is passed through unchanged.
+"""
+import json, os, subprocess, sys, time
+
+CACHE = os.path.join(os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"),
+                     "claude-usage.json")
+
+raw = sys.stdin.read()
+
+try:
+    rl = json.loads(raw or "{}").get("rate_limits")
+    if rl:
+        os.makedirs(os.path.dirname(CACHE), exist_ok=True)
+        tmp = CACHE + ".sl.tmp"
+        with open(tmp, "w") as f:
+            json.dump({"five_hour": rl.get("five_hour"), "seven_day": rl.get("seven_day"),
+                       "updated_at": int(time.time())}, f)
+        os.replace(tmp, CACHE)
+except Exception:
+    pass  # never break the statusline
+
+if len(sys.argv) > 1:
+    cmd = " ".join(sys.argv[1:])
+    r = subprocess.run(cmd, shell=True, input=raw, text=True, capture_output=True)
+    sys.stdout.write(r.stdout)

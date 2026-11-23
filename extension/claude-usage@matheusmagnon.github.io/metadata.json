@@ -1,0 +1,8 @@
+{
+  "uuid": "claude-usage@matheusmagnon.github.io",
+  "name": "Claude Usage",
+  "description": "Shows your Claude plan usage limits (5-hour session and weekly) in the top bar, like the usage page on claude.ai. Data comes from Claude Code's statusline and an optional poller. Unofficial — not affiliated with Anthropic.",
+  "shell-version": ["45", "46", "47", "48", "49", "50"],
+  "url": "https://github.com/matheusmagnon/claude-usage-gnome",
+  "version": 1
+}

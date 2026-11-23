@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+"""Fetch Claude plan usage limits (5h session / weekly) and write them to
+~/.cache/claude-usage.json for the Claude Usage GNOME extension.
+
+Uses Claude Code's OAuth token READ-ONLY: it never refreshes it (that could log
+Claude Code out). If the token has expired (Claude Code closed for hours), it
+exits quietly and the last value stays. Next time Claude Code runs, it refreshes
+the token and polling resumes.
+
+NOTE: api.anthropic.com/api/oauth/usage is an undocumented endpoint (the same
+one behind claude.ai's usage page). It may change without notice.
+"""
+import json, os, sys, time, urllib.request, urllib.error
+from datetime import datetime
+
+CONFIG = os.environ.get("CLAUDE_CONFIG_DIR") or os.path.expanduser("~/.claude")
+CREDS = os.path.join(CONFIG, ".credentials.json")
+CACHE = os.path.join(os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"),
+                     "claude-usage.json")
+URL = "https://api.anthropic.com/api/oauth/usage"
+
+
+def epoch(iso):
+    try:
+        return int(datetime.fromisoformat(iso).timestamp())
+    except Exception:
+        return None
+
+
+def window(w):
+    if not isinstance(w, dict) or w.get("utilization") is None:
+        return None
+    return {"used_percentage": round(w["utilization"]), "resets_at": epoch(w.get("resets_at"))}
+
+
+def main():
+    try:
+        with open(CREDS) as f:
+            oauth = json.load(f)["claudeAiOauth"]
+    except Exception:
+        return 0  # not logged in with a Claude subscription
+    if oauth.get("expiresAt", 0) / 1000 < time.time() + 30:
+        return 0  # expired: let Claude Code refresh it
+
+    req = urllib.request.Request(URL, headers={
+        "Authorization": f"Bearer {oauth['accessToken']}",
+        "anthropic-beta": "oauth-2025-04-20",
+        "User-Agent": "claude-usage-gnome",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=10) as r:
+            d = json.load(r)
+    except (urllib.error.URLError, OSError, ValueError) as e:
+        print(f"claude-usage-poll: {e}", file=sys.stderr)
+        return 0
+
+    out = {"five_hour": window(d.get("five_hour")),
+           "seven_day": window(d.get("seven_day")),
+           "updated_at": int(time.time())}
+    if not out["five_hour"] and not out["seven_day"]:
+        return 0
+    os.makedirs(os.path.dirname(CACHE), exist_ok=True)
+    tmp = CACHE + ".poll.tmp"
+    with open(tmp, "w") as f:
+        json.dump(out, f)
+    os.replace(tmp, CACHE)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

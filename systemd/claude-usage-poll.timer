@@ -1,0 +1,10 @@
+[Unit]
+Description=Refresh Claude plan usage limits every minute
+
+[Timer]
+OnStartupSec=20s
+OnUnitActiveSec=60s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target
