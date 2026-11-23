@@ -3,9 +3,7 @@
 See your **Claude plan usage limits** right in the GNOME top bar — the same numbers
 as the usage page on claude.ai: the **5-hour session** and the **weekly** limit.
 
-```
-✻ 42% · 27%
-```
+<p align="center"><img src="docs/screenshot.png" alt="Claude Usage indicator and menu in the GNOME top bar" width="471"></p>
 
 Click it for progress bars, reset times ("Resets at 13:10", "Resets Sun, 22:00"),
 when the data was last updated, and a **Refresh now** button.

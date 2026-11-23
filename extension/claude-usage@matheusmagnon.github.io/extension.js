@@ -97,7 +97,7 @@ class UsageRow {
         const box = new St.BoxLayout({vertical: true, x_expand: true});
         const head = new St.BoxLayout({x_expand: true});
         head.add_child(new St.Label({text: title, x_expand: true}));
-        this.pct = new St.Label({text: '—', style_class: 'claude-usage-label'});
+        this.pct = new St.Label({text: '—', style_class: 'claude-usage-label claude-usage-pct'});
         head.add_child(this.pct);
         const bg = new St.Widget({style_class: 'claude-usage-bar-bg', x_expand: true});
         this.fill = new St.Widget({style_class: 'claude-usage-bar-fill', width: 0});

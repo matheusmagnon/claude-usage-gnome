@@ -7,3 +7,4 @@
 .claude-usage-bar-fill.claude-usage-warn { background-color: #f6d32d; }
 .claude-usage-bar-fill.claude-usage-crit { background-color: #ff7b63; }
 .claude-usage-sub { font-size: smaller; color: #9a9996; }
+.claude-usage-pct { padding-left: 16px; }
